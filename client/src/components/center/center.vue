@@ -108,7 +108,7 @@
                 return this.$store.dispatch('changeSideBarState', false)
             },
             toCart() {
-                router.push({ path: 'cart' })
+                this.$router.push("/cart");
             },
             clickLogin() {
                 // 验证
@@ -121,23 +121,22 @@
                                 name: this.dataLogin.name,
                                 pwd: this.dataLogin.pass
                             }
+                        }).then((res) => {
+                            let data = res.data
+                            console.log(data)
+                            if (data.code === 200) {
+                                // 登录成功
+                                this.jam.locDbSet('dataLogin', {
+                                    name: this.dataLogin.name,
+                                    pass: this.dataLogin.pass
+                                })
+                                this.showState = 'logined'
+                                this.tips = ''
+                            } else {
+                                console.log(data.msg)
+                                this.tips = data.msg
+                            }
                         })
-                            .then((res) => {
-                                let data = res.data
-                                console.log(data)
-                                if (data.code === 200) {
-                                    // 登录成功
-                                    this.jam.locDbSet('dataLogin', {
-                                        name: this.dataLogin.name,
-                                        pass: this.dataLogin.pass
-                                    })
-                                    this.showState = 'logined'
-                                    this.tips = ''
-                                } else {
-                                    console.log(data.msg)
-                                    this.tips = data.msg
-                                }
-                            })
 //              .then(function (res) {
 //                let data = res.data
 //                console.log(data)
@@ -172,23 +171,22 @@
                                 name: this.dataLogin.name,
                                 pwd: this.dataLogin.pass
                             }
+                        }).then((res) => {
+                            let data = res.data
+                            console.log(data)
+                            if (data.code === 200) {
+                                // 登录成功
+                                this.jam.locDbSet('dataLogin', {
+                                    name: this.dataLogin.name,
+                                    pass: this.dataLogin.pass
+                                })
+                                this.showState = 'logined'
+                                this.tips = ''
+                            } else {
+                                console.log(data.msg)
+                                this.tips = data.msg
+                            }
                         })
-                            .then((res) => {
-                                let data = res.data
-                                console.log(data)
-                                if (data.code === 200) {
-                                    // 登录成功
-                                    this.jam.locDbSet('dataLogin', {
-                                        name: this.dataLogin.name,
-                                        pass: this.dataLogin.pass
-                                    })
-                                    this.showState = 'logined'
-                                    this.tips = ''
-                                } else {
-                                    console.log(data.msg)
-                                    this.tips = data.msg
-                                }
-                            })
                     } else {
                         this.tips = '请输入由字母数字组成的6位验证码密码！'
                     }

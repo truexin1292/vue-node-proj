@@ -38,14 +38,15 @@
 </template>
 
 <script>
-    import Jam from '../com/jam'
-    import LocalDB from '../com/localDB'
-    import Vue from 'vue'
-    import VueRouter from 'vue-router'
+    import Jam from '../com/jam';
+    import LocalDB from '../com/localDB';
+    import Vue from 'vue';
+    import VueRouter from 'vue-router';
+    import { MessageBox, Toast } from 'mint-ui';
 
-    Vue.use(VueRouter)
-    const router = new VueRouter()
-    import '../../css/cart.scss'
+    Vue.use(VueRouter);
+    const router = new VueRouter();
+    import '../../css/cart.scss';
 
     export default {
         data() {
@@ -59,16 +60,15 @@
             }
         },
         created() {
-            this.$store.dispatch('changeHeaderTitle', '购物车')
+            this.$store.dispatch('changeHeaderTitle', '购物车');
             // 判断是否登录
-            this.jam = new Jam()
+            this.jam = new Jam();
             if (this.jam.locDbGet('dataLogin')) {
-                this.name = this.jam.locDbGet('dataLogin').name
-                this.getDataCart()
-            } else {
-                // 弹窗未登录，去登录，router
-                console.log('未登录！')
-                router.push({ path: 'center' })
+                this.name = this.jam.locDbGet('dataLogin').name;
+                this.getDataCart();
+            } else {// 弹窗未登录，去登录，router
+                Toast('未登录！');
+                this.$router.push('/center');
             }
         },
         computed: {
@@ -78,19 +78,19 @@
                 Array.from(this.carts).forEach(cart => {
                     // [...this.carts].forEach(cart => {   //SyntaxError: Unexpected token
                     if (cart.cart_isSelect) {
-                        price += cart.brand_price * cart.cart_num
+                        price += cart.brand_price * cart.cart_num;
                     }
                 })
-                return price
+                return price;
             }
         },
         methods: {
             showSideBar() {
-                return this.$store.dispatch('changeSideBarState', true)
+                return this.$store.dispatch('changeSideBarState', true);
                 // return this.$store.commit('changeSideBarState', true)
             },
             hideSideBar() {
-                return this.$store.dispatch('changeSideBarState', false)
+                return this.$store.dispatch('changeSideBarState', false);
             },
             getDataCart() {
                 this.$http({
@@ -99,66 +99,66 @@
                     params: {
                         name: this.name
                     }
+                }).then((res) => {
+                    let data = res.data;
+                    console.log(data);
+                    if (data.code === 200) {
+                        console.log(data.msg);
+                        this.dataCart = data;
+                        this.carts = data.data;
+                    } else {
+                        console.log(data.msg);
+                    }
                 })
-                    .then((res) => {
-                        let data = res.data
-                        console.log(data)
-                        if (data.code === 200) {
-                            console.log(data.msg)
-                            this.dataCart = data
-                            this.carts = data.data
-                        } else {
-                            console.log(data.msg)
-                        }
-                    })
             },
             changeNum(change, cart) {
                 if (change === -1) {
                     if (cart.cart_num >= 2) {
-                        cart.cart_num = cart.cart_num - 1
+                        cart.cart_num = cart.cart_num - 1;
                     }
                 } else {
-                    cart.cart_num = cart.cart_num + 1
+                    cart.cart_num = cart.cart_num + 1;
                 }
             },
             clickSelect(cart) {
-                cart.cart_isSelect = !cart.cart_isSelect  // 没有这个，数据没及时同步到全选
+                cart.cart_isSelect = !cart.cart_isSelect;  // 没有这个，数据没及时同步到全选
                 let isAllSelectState = Array.from(this.carts).every(cart => {
-                    return cart.cart_isSelect
+                    return cart.cart_isSelect;
                 })
-                this.isAllSelectState = isAllSelectState
+                this.isAllSelectState = isAllSelectState;
             },
             clickAllSelect() {
-                this.isAllSelectState = !this.isAllSelectState
+                this.isAllSelectState = !this.isAllSelectState;
                 Array.from(this.carts).forEach(cart => {
                     // [...this.carts].forEach(cart => {   //SyntaxError: Unexpected token
-                    cart.cart_isSelect = this.isAllSelectState
+                    cart.cart_isSelect = this.isAllSelectState;
                 })
             },
             delectCart(index, carts, brandId) {
-                // 从数据库删除该商品
-                this.$http({
-                    url: '/api/goods/delectCart',
-                    method: 'GET',
-                    params: {
-                        brand_id: brandId,
-                        name: this.name
-                    }
-                })
-                    .then((res) => {
-                        let data = res.data
-                        console.log(data)
+                MessageBox.confirm('您确定要删除此类商品么？').then((action) => {
+                    // 从数据库删除该商品
+                    this.$http({
+                        url: '/api/goods/delectCart',
+                        method: 'GET',
+                        params: {
+                            brand_id: brandId,
+                            name: this.name
+                        }
+                    }).then((res) => {
+                        let data = res.data;
+                        console.log(data);
                         if (data.code === 200) {
-                            // 删除成功
-                            console.log(data.msg)
-                            carts.splice(index, 1)
-                            let localDB = new LocalDB('dataCart')
-                            this.dataCart.data.carts = this.carts
-                            localDB.set(this.dataCart)
+                            carts.splice(index, 1);
+                            let localDB = new LocalDB('dataCart');
+                            this.dataCart.data.carts = this.carts;
+                            localDB.set(this.dataCart);
+                            Toast(data.msg);
                         } else {
-                            console.log(data.msg)
+                            Toast(data.msg);
                         }
                     })
+                });
+
             }
         }
     }

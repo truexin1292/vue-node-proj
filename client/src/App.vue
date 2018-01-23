@@ -8,10 +8,14 @@
 </template>
 
 <script type="text/ecmascript-6">
-    import comHeader from './components/com/header.vue'
-    import comSidebar from './components/com/sidebar.vue'
+    import Vue from 'vue';
+    import comHeader from './components/com/header.vue';
+    import comSidebar from './components/com/sidebar.vue';
+    import 'mint-ui/lib/style.css';
+    import MintUI from 'mint-ui';
+    import './css/base.scss';
 
-    import './css/base.scss'
+    Vue.use(MintUI);
 
     export default {
         data() {

@@ -16,11 +16,6 @@
                         <li>
                             <router-link to="/cart"><span>购物车</span><i>></i></router-link>
                         </li>
-                        <!-- <li><a href="javascript:;"><span>首页</span><i>></i></a></li>
-                        <li><a href="javascript:;"><span>首页</span><i>></i></a></li>
-                        <li><a href="javascript:;"><span>首页</span><i>></i></a></li>
-                        <li><a href="javascript:;"><span>首页</span><i>></i></a></li>
-                        <li><a href="javascript:;"><span>首页</span><i>></i></a></li> -->
                     </ul>
                 </transition>
             </div>

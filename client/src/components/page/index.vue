@@ -67,10 +67,15 @@
                             <span class="price">￥{{brand.brand_price}}</span>
                         </router-link>
                     </li>
-                    <infinite-loading :on-infinite="onInfinite" ref="infiniteLoading" spinner="default">
-            <span slot="no-more">
-              没有更多数据了
-            </span>
+                    <!--<infinite-loading :on-infinite="onInfinite" ref="infiniteLoading" spinner="default">-->
+                    <!--<span slot="no-more">-->
+                    <!--没有更多数据了-->
+                    <!--</span>-->
+                    <!--</infinite-loading>-->
+                    <infinite-loading @infinite="infiniteHandler">
+                        <span slot="no-more">
+                          没有更多数据了
+                        </span>
                     </infinite-loading>
                 </ul>
             </div>
@@ -114,44 +119,66 @@
                 this.$http({
                     url: '/api/goods/index',
                     method: 'GET'
+                }).then((res) => {
+                    let data = res.data
+                    console.log(data)
+                    if (data.code === 200) {
+                        // 处理数据
+                        this.temai = data.data.temai
+                        this.rexiao = data.data.rexiao
+                        this.jingpin = data.data.jingpin
+                    } else {
+                        console.log(data.msg)
+                    }
                 })
-                    .then((res) => {
-                        let data = res.data
-                        console.log(data)
-                        if (data.code === 200) {
-                            // 处理数据
-                            this.temai = data.data.temai
-                            this.rexiao = data.data.rexiao
-                            this.jingpin = data.data.jingpin
-                        } else {
-                            console.log(data.msg)
-                        }
-                    })
             },
-            onInfinite() {
+//            onInfinite() {
+//                this.$http({
+//                    url: '/api/goods/index/jingpin',
+//                    method: 'GET',
+//                    params: {
+//                        nowLength: this.jingpin.length
+//                    }
+//                }).then((res) => {
+//                    let data = res.data
+//                    let newJingpin = data.data
+//                    console.log(data)
+//                    if (data.code === 200) {
+//                        // 处理数据
+//                        this.jingpin = this.jingpin.concat(newJingpin)
+//                        console.log('this.$refs', this, this.$refs);
+//                        this.$refs.infiniteLoading.$emit('$InfiniteLoading:loaded')
+//                        if (newJingpin.length === 0) {
+//                            this.$refs.infiniteLoading.$emit('$InfiniteLoading:complete')
+//                        }
+//                    } else {
+//                        console.log(data.msg)
+//                    }
+//                })
+//            },
+            infiniteHandler($state) {
                 this.$http({
                     url: '/api/goods/index/jingpin',
                     method: 'GET',
                     params: {
                         nowLength: this.jingpin.length
                     }
-                })
-                    .then((res) => {
-                        let data = res.data
-                        let newJingpin = data.data
-                        console.log(data)
-                        if (data.code === 200) {
-                            // 处理数据
-                            this.jingpin = this.jingpin.concat(newJingpin)
-                            this.$refs.infiniteLoading.$emit('$InfiniteLoading:loaded')
-                            if (newJingpin.length === 0) {
-                                this.$refs.infiniteLoading.$emit('$InfiniteLoading:complete')
-                            }
-                        } else {
-                            console.log(data.msg)
+                }).then((res) => {
+                    let data = res.data
+                    let newJingpin = data.data
+                    console.log(data)
+                    if (data.code === 200) {
+                        // 处理数据
+                        this.jingpin = this.jingpin.concat(newJingpin)
+                        $state.loaded();
+                        if (newJingpin.length === 0) {
+                            $state.complete();
                         }
-                    })
-            }
+                    } else {
+                        console.log(data.msg)
+                    }
+                })
+            },
         }
     }
 </script>
